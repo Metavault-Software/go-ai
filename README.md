@@ -1,2 +1,8 @@
-# go-ai
-Make AI accessible. Write your own agent or use existing ones.
+```shell
+export  OPENAI_API_KEY=your_api_key
+export  GOOGLE_API_KEY=your_api_key
+go build
+./goai
+```
+
+

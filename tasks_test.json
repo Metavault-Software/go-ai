@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "name": "OpenAI Image Generation Task",
+    "executor": "OpenAIGenerativeAgent",
+    "args": {
+      "prompt": "elephant play soccer on moon",
+      "n": 2,
+      "size": "1024x1024"
+    }
+  },
+  {
+    "id": "2",
+    "name": "OpenAI Image Generation Task",
+    "executor": "OpenAIGenerativeAgent",
+    "args": {
+      "prompt": "monkey eating popsicle",
+      "n": 2,
+      "size": "1024x1024"
+    }
+  },
+  {
+    "id": "3",
+    "name": "OpenAI Image Generation Task",
+    "executor": "OpenAIGenerativeAgent",
+    "args": {
+      "prompt": "paw patrol on mars eating popsicle",
+      "n": 2,
+      "size": "1024x1024"
+    }
+  }
+]

@@ -1,0 +1,1 @@
+curl -X DELETE http://localhost:8080/api/v1/tasks/1  | jq .

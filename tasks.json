@@ -1,0 +1,86 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "name": "OpenAI Chat Task",
+      "executor": "OpenAIAgent",
+      "args": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Go program to illustrate Go's powerful concurrency model."
+          }
+        ]
+      }
+    },
+    {
+      "id": "2",
+      "name": "Google Translation Task",
+      "executor": "GoogleTranslationAgent",
+      "args": {
+        "source": "en",
+        "target": "fr",
+        "text": "Hello World"
+      }
+    },
+    {
+      "id": "3",
+      "name": "WebSocket Server Task",
+      "executor": "WebSocketServerAgent",
+      "args": {
+        "address": "localhost:8080"
+      }
+    },
+    {
+      "id": "4",
+      "name": "WebSocket Client Task",
+      "executor": "WebSocketClientAgent",
+      "args": {
+        "address": "ws://localhost:8080/ws"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Local File System Task",
+      "executor": "LocalFileSystemAgent",
+      "args": {
+        "dir_path": "/tmp/test"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Docker Task",
+      "executor": "DockerAgent",
+      "args": {
+        "image": "alpine",
+        "command": [
+          "echo",
+          "Hello, world!"
+        ]
+      }
+    }
+  ],
+  "Edges": {
+    "1": [
+      "2",
+      "3"
+    ],
+    "2": [
+      "6"
+    ],
+    "3": [
+      "6"
+    ],
+    "4": [
+      "3"
+    ],
+    "5": [
+      "6"
+    ],
+    "6": [],
+    "7": [
+      "4"
+    ]
+  }
+}
+
