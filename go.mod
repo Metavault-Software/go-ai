@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/translate v1.8.1
 	cloud.google.com/go/vision v1.2.0
 	github.com/docker/docker v24.0.4+incompatible
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/sashabaranov/go-openai v1.13.0

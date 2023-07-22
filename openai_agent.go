@@ -44,7 +44,6 @@ func (e *OpenAIAgent) Execute(ctx context.Context, task *Task) error {
 
 func ToChatCompletionMessages(args map[string]interface{}) []openai.ChatCompletionMessage {
 	var messages []openai.ChatCompletionMessage
-
 	for _, v := range args["messages"].([]interface{}) {
 		messages = append(messages, openai.ChatCompletionMessage{
 			Role:    v.(map[string]interface{})["role"].(string),
