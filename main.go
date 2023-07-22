@@ -38,8 +38,6 @@ func main() {
 		v1.GET("/tasks/:id", GetTask)
 		v1.DELETE("/tasks/:id", DeleteTask)
 		v1.PUT("/tasks/:id", UpdateTask)
-		tasks := taskDag.GetAllTasks()
-
 		for _, task := range tasks {
 			task := task // Create a new 'task' variable in this scope, otherwise all goroutines will share the same loop variable
 			statusPath := "/ws/" + task.Id + "/status"
