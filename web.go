@@ -74,3 +74,11 @@ func UpdateTask(c *gin.Context) {
 
 	c.JSON(200, updateTask)
 }
+
+func EmulateAllTasks() []Task {
+	emulator := TaskDagEmulator{
+		taskDag,
+	}
+	tasks := emulator.Generate100RandomTasks()
+	return tasks
+}

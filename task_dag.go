@@ -131,8 +131,13 @@ func (d *TaskDag) AddTask(task TaskSpec) {
 	}
 }
 
-func (d *TaskDag) GetAllTasks() interface{} {
-	return d.Tasks
+func (d *TaskDag) GetAllTasks() []Task {
+	dag := d
+	var tasks []Task
+	for _, task := range dag.Tasks {
+		tasks = append(tasks, task)
+	}
+	return tasks
 }
 
 func (d *TaskDag) GetTask(id string) (interface{}, interface{}) {
