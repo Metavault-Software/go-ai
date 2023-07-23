@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type TaskDagEmulator struct {
 	TaskDag
@@ -11,8 +14,9 @@ func (e *TaskDagEmulator) Generate100RandomTasks() []Task {
 	for i := 0; i < 10; i++ {
 		id := fmt.Sprintf("task-%d", i)
 		task := Task{
-			Id:   id,
-			Name: id,
+			Id:     id,
+			Name:   id,
+			Status: make(chan TaskStatus),
 			Executor: NewEmulateOpenAIAgent(TaskSpec{
 				ID:       id,
 				Name:     id,
@@ -30,5 +34,25 @@ func (e *TaskDagEmulator) Generate100RandomTasks() []Task {
 		}
 		tasks = append(tasks, task)
 	}
+
+	// write status to Status channel
+	for _, task := range tasks {
+		go func(task Task) {
+			for {
+				task.Status <- Running
+				fmt.Printf("Task %s status: %v\n", task.Id, task.Status)
+				time.Sleep(1 * time.Second)
+			}
+		}(task)
+	}
+
+	go func() {
+		// after 10 secs close all tasks
+		<-time.After(10 * time.Second)
+		for _, task := range tasks {
+			close(task.Done)
+		}
+	}()
+
 	return tasks
 }

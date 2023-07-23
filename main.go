@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 )
 
 func main() {
@@ -48,21 +50,61 @@ func main() {
 					return
 				}
 
-				defer conn.Close()
-
-				for status := range task.Status {
-					err := conn.WriteJSON(status)
+				defer func(conn *websocket.Conn) {
+					err := conn.Close()
 					if err != nil {
-						fmt.Printf("Failed to write JSON: %+v", err)
-						break
+						log.Printf("Failed to close websocket connection: %+v", err)
+					}
+				}(conn)
+
+				for {
+					select {
+					case <-task.Done:
+						v := struct {
+							Status int `json:"status"`
+						}{
+							Status: int(Completed),
+						}
+						err = conn.WriteJSON(v)
+						if err != nil {
+							fmt.Printf("Failed to write JSON: %+v", err)
+							break
+						}
+						err = conn.Close()
+						if err != nil {
+							fmt.Printf("Failed to close websocket connection: %+v", err)
+						}
+						return
+					case status := <-task.Status:
+						v := struct {
+							Status int `json:"status"`
+						}{
+							Status: int(status),
+						}
+						err = conn.WriteJSON(v)
+						if err != nil {
+							fmt.Printf("Failed to write JSON: %+v", err)
+							break
+						}
 					}
 				}
 			}
 			v1.GET(statusPath, handlers)
 		}
 	}
+	err := r.Run(":8080")
+	if err != nil {
+		log.Printf("Failed to start server: %+v", err)
+	}
+}
 
-	r.Run(":8080")
+func ToJson(status TaskStatus) ([]byte, error) {
+	marshal, err := json.Marshal(struct {
+		Status int `json:"status"`
+	}{
+		Status: int(status),
+	})
+	return marshal, err
 }
 
 func WelcomeMessage(context *gin.Context) {
