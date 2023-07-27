@@ -22,8 +22,8 @@ func CreateTask(c *gin.Context) {
 	c.JSON(201, task)
 }
 
-// GetAllTasks Handler for GET /tasks
-func GetAllTasks(c *gin.Context) {
+// GetTasks Handler for GET /tasks
+func GetTasks(c *gin.Context) {
 	tasks := taskDag.GetAllTasks()
 	fmt.Printf("%+v\n", tasks)
 	c.JSON(200, tasks)
@@ -42,7 +42,7 @@ func GetTask(c *gin.Context) {
 	c.JSON(200, task)
 }
 
-// Handler for DELETE /tasks/:id
+// DeleteTask Handler for DELETE /tasks/:id
 func DeleteTask(c *gin.Context) {
 	id := c.Param("id")
 
@@ -55,7 +55,7 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Task deleted successfully"})
 }
 
-// Handler for PUT /tasks/:id
+// UpdateTask Handler for PUT /tasks/:id
 func UpdateTask(c *gin.Context) {
 	id := c.Param("id")
 

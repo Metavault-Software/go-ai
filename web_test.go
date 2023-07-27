@@ -10,7 +10,7 @@ func TestGin(t *testing.T) {
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("/tasks", CreateTask)
-		v1.GET("/tasks", GetAllTasks)
+		v1.GET("/tasks", GetTasks)
 		v1.GET("/tasks/:id", GetTask)
 		v1.DELETE("/tasks/:id", DeleteTask)
 		v1.PUT("/tasks/:id", UpdateTask)
