@@ -6,7 +6,7 @@ import (
 )
 
 type TaskDagEmulator struct {
-	TaskDag
+	TaskGraph
 }
 
 func (e *TaskDagEmulator) Generate100RandomTasks() []Task {

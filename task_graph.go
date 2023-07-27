@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type TaskDag struct {
+type TaskGraph struct {
 	Tasks map[string]Task
 	Edges map[string][]Task
 }
 
-func (d *TaskDag) RunConcurrently(started, result chan Task) {
+func (d *TaskGraph) Run(started, result chan Task) {
 	visited := &sync.Map{}
 
 	var visit func(task Task)
@@ -52,8 +52,8 @@ func (d *TaskDag) RunConcurrently(started, result chan Task) {
 	}()
 }
 
-func (d *TaskDag) FromTaskDagSpec(taskDagSpec TaskDagSpec) error {
-	// Reset tasks and edges in the current TaskDag
+func (d *TaskGraph) FromTaskDagSpec(taskDagSpec TaskSpecGraph) error {
+	// Reset tasks and edges in the current TaskGraph
 	d.Tasks = make(map[string]Task)
 	d.Edges = make(map[string][]Task)
 
@@ -100,7 +100,7 @@ func (d *TaskDag) FromTaskDagSpec(taskDagSpec TaskDagSpec) error {
 	return nil
 }
 
-func (d *TaskDag) AddTask(task TaskSpec) {
+func (d *TaskGraph) AddTask(task TaskSpec) {
 	var executor Executor
 	switch task.Executor {
 	case "OpenAIAgent":
@@ -131,7 +131,7 @@ func (d *TaskDag) AddTask(task TaskSpec) {
 	}
 }
 
-func (d *TaskDag) GetAllTasks() []Task {
+func (d *TaskGraph) GetAllTasks() []Task {
 	dag := d
 	var tasks []Task
 	for _, task := range dag.Tasks {
@@ -140,11 +140,11 @@ func (d *TaskDag) GetAllTasks() []Task {
 	return tasks
 }
 
-func (d *TaskDag) GetTask(id string) (interface{}, interface{}) {
+func (d *TaskGraph) GetTask(id string) (interface{}, interface{}) {
 	return id, d.Tasks[id]
 }
 
-func (d *TaskDag) DeleteTask(id string) error {
+func (d *TaskGraph) DeleteTask(id string) error {
 	if _, ok := d.Tasks[id]; !ok {
 		return fmt.Errorf("task %s not found", id)
 	}
@@ -152,7 +152,7 @@ func (d *TaskDag) DeleteTask(id string) error {
 	return nil
 }
 
-func (d *TaskDag) UpdateTask(task Task) (Task, error) {
+func (d *TaskGraph) UpdateTask(task Task) (Task, error) {
 	if _, ok := d.Tasks[task.Id]; !ok {
 		return Task{}, fmt.Errorf("task %s not found", task.Id)
 	}

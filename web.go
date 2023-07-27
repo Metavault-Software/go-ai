@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var taskDag = TaskDag{
+var taskDag = TaskGraph{
 	Tasks: make(map[string]Task),
 	Edges: make(map[string][]Task),
 }
@@ -17,7 +17,7 @@ func CreateTask(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	// Add the task to the TaskDag
+	// Add the task to the TaskGraph
 	taskDag.AddTask(task)
 	c.JSON(201, task)
 }

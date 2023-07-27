@@ -31,23 +31,23 @@ func TestTaskDag(t *testing.T) {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	// Parse JSON into task specifications
-	var taskDagSpec TaskDagSpec
+	var taskDagSpec TaskSpecGraph
 	err = json.Unmarshal(byteValue, &taskDagSpec)
 	if err != nil {
 		log.Fatalf("Error parsing JSON: %v", err)
 	}
 
-	// Create the TaskDag from the TaskDagSpec
-	taskDag := new(TaskDag)
+	// Create the TaskGraph from the TaskSpecGraph
+	taskDag := new(TaskGraph)
 
 	err = taskDag.FromTaskDagSpec(taskDagSpec)
 	if err != nil {
-		log.Fatalf("Error creating TaskDag: %v", err)
+		log.Fatalf("Error creating TaskGraph: %v", err)
 	}
 
 	started := make(chan Task)
 	result := make(chan Task)
-	go taskDag.RunConcurrently(started, result)
+	go taskDag.Run(started, result)
 
 	for {
 		select {
