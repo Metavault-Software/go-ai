@@ -8,8 +8,11 @@ import (
 
 func TestGoogleTranslationAgent_Execute(t *testing.T) {
 	task := &Task{
-		Id:       "1",
-		Name:     "Sample task",
+		Id: "1",
+		Agent: Agent{
+			AgentId: "1",
+			Name:    "Sample task",
+		},
 		Executor: &GoogleTranslationAgent{},
 		Args:     map[string]interface{}{"source": language.English, "target": language.French},
 	}

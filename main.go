@@ -30,8 +30,22 @@ func main() {
 		})
 	}
 
+	store := AgentStore{store: make(map[string]Agent)}
+	storeSpec := AgentStoreSpec{}
+	err := storeSpec.LoadAgentsFromFile("agents.json", &store)
+	if err != nil {
+		log.Printf("Failed to load agents from file: %+v", err)
+	}
+
 	v1 := r.Group("/api/v1")
 	{
+
+		v1.POST("/agents", store.AddAgent)
+		v1.GET("/agents", store.GetAgents)
+		v1.GET("/agents/:agentId", store.GetAgent)
+		v1.PUT("/agents/:agentId", store.UpdateAgent)
+		v1.DELETE("/agents/:agentId", store.DeleteAgent)
+
 		v1.POST("/tasks", CreateTask)
 		v1.GET("/tasks", func(context *gin.Context) {
 			context.JSON(200, tasks)
@@ -69,7 +83,7 @@ func main() {
 			v1.GET(statusPath, handlers)
 		}
 	}
-	err := r.Run(":8080")
+	err = r.Run(":8080")
 	if err != nil {
 		log.Printf("Failed to start server: %+v", err)
 	}

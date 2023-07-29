@@ -15,7 +15,7 @@ func TestNewWebSocketServerAgent(t *testing.T) {
 	}
 	task := &Task{
 		Id:       "1",
-		Name:     "Sample task",
+		Agent:    Agent{AgentId: "1", Name: "WebSocket Server Task"},
 		Executor: NewWebSocketServerAgent(spec),
 	}
 

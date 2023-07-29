@@ -1,0 +1,62 @@
+{
+  "agents": [
+    {
+      "id": "1",
+      "name": "OpenAI Chat Task",
+      "executor": "OpenAIAgent",
+      "args": {
+        "messages": [
+          {
+            "role": "",
+            "content": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "2",
+      "name": "Google Translation Task",
+      "executor": "GoogleTranslationAgent",
+      "args": {
+        "source": "",
+        "target": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "3",
+      "name": "WebSocket Server Task",
+      "executor": "WebSocketServerAgent",
+      "args": {
+        "address": ""
+      }
+    },
+    {
+      "id": "4",
+      "name": "WebSocket Client Task",
+      "executor": "WebSocketClientAgent",
+      "args": {
+        "address": ""
+      }
+    },
+    {
+      "id": "6",
+      "name": "Local File System Task",
+      "executor": "LocalFileSystemAgent",
+      "args": {
+        "dir_path": ""
+      }
+    },
+    {
+      "id": "7",
+      "name": "Docker Task",
+      "executor": "DockerAgent",
+      "args": {
+        "image": "alpine",
+        "command": [
+          ""
+        ]
+      }
+    }
+  ]
+}

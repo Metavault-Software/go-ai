@@ -31,8 +31,11 @@ func TestSpec(t *testing.T) {
 			panic(fmt.Errorf("unknown executor: %s", spec.Executor))
 		}
 		tasks[i] = &Task{
-			Id:       spec.ID,
-			Name:     spec.Name,
+			Id: spec.ID,
+			Agent: Agent{
+				AgentId: spec.ID,
+				Name:    spec.Name,
+			},
 			Executor: executor,
 			Args:     spec.Args,
 		}
