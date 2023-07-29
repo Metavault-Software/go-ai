@@ -24,7 +24,7 @@ func CreateTask(c *gin.Context) {
 
 // GetTasks Handler for GET /tasks
 func GetTasks(c *gin.Context) {
-	tasks := taskDag.GetAllTasks()
+	tasks := taskDag.GetTasks()
 	fmt.Printf("%+v\n", tasks)
 	c.JSON(200, tasks)
 }
@@ -75,7 +75,7 @@ func UpdateTask(c *gin.Context) {
 	c.JSON(200, updateTask)
 }
 
-func EmulateAllTasks() []Task {
+func EmulateTasks() []Task {
 	emulator := TaskDagEmulator{
 		taskDag,
 	}

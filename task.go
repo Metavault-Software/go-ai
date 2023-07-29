@@ -7,18 +7,18 @@ import (
 )
 
 type Task struct {
+	Agent
 	Id           string                 // Unique identifier for each task
-	Name         string                 // Job name for better understanding
+	Args         map[string]interface{} // Arguments to be passed to the executor
+	Executor     Executor               // An interface that knows how to execute the task
 	Status       chan TaskStatus        `json:"-"` // Status of the task: Pending, Running, Completed, Failed, etc.
 	Result       interface{}            // Result data after task execution
 	Error        error                  // Any error encountered during task execution
-	Executor     Executor               // An interface that knows how to execute the task
 	Labels       map[string]interface{} // Additional task details as key-value pairs
 	StartTime    time.Time              // Time when the task started
 	EndTime      time.Time              // Time when the task ended
 	EstDuration  time.Duration          // Estimated duration of the task
 	CompDuration time.Duration          // Completed duration of the task
-	Args         map[string]interface{} // Arguments to be passed to the executor
 	Done         chan bool              `json:"-"` // Channel to signal task completion
 }
 

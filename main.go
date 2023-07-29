@@ -21,7 +21,7 @@ func main() {
 
 	homepage := r.Group("/")
 	homepage.GET("/", WelcomeMessage)
-	tasks := EmulateAllTasks()
+	tasks := EmulateTasks()
 
 	emulator := r.Group("/api/v1/emulator")
 	{

@@ -81,8 +81,10 @@ func (d *TaskGraph) FromTaskDagSpec(taskDagSpec TaskSpecGraph) error {
 		}
 
 		d.Tasks[spec.ID] = Task{
-			Id:       spec.ID,
-			Name:     spec.Name,
+			Id: spec.ID,
+			Agent: Agent{
+				Name: spec.Name,
+			},
 			Executor: executor,
 			Args:     spec.Args,
 			Done:     make(chan bool), // Don't forget to initialize the Done channel
@@ -123,15 +125,17 @@ func (d *TaskGraph) AddTask(task TaskSpec) {
 	}
 
 	d.Tasks[task.ID] = Task{
-		Id:       task.ID,
-		Name:     task.Name,
+		Id: task.ID,
+		Agent: Agent{
+			Name: task.Name,
+		},
 		Executor: executor,
 		Args:     task.Args,
 		Done:     make(chan bool),
 	}
 }
 
-func (d *TaskGraph) GetAllTasks() []Task {
+func (d *TaskGraph) GetTasks() []Task {
 	dag := d
 	var tasks []Task
 	for _, task := range dag.Tasks {

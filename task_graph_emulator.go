@@ -14,8 +14,10 @@ func (e *TaskDagEmulator) Generate100RandomTasks() []Task {
 	for i := 0; i < 10; i++ {
 		id := fmt.Sprintf("task-%d", i)
 		task := Task{
-			Id:     id,
-			Name:   id,
+			Id: id,
+			Agent: Agent{
+				Name: id,
+			},
 			Status: make(chan TaskStatus),
 			Executor: NewEmulateOpenAIAgent(TaskSpec{
 				ID:       id,
