@@ -12,14 +12,14 @@ type OpenAIAgent struct {
 	Messages []openai.ChatCompletionMessage
 }
 
-func NewOpenAIAgent(spec TaskSpec) *OpenAIAgent {
+func NewOpenAIAgent(task Task) *OpenAIAgent {
 	parser := GetInstance()
 	client := openai.NewClient(parser.OpenAPIKey)
 	model := "gpt-3.5-turbo"
 	agent := OpenAIAgent{}
 	agent.Client = client
 	agent.Model = model
-	messages := ToChatCompletionMessages(spec.Args)
+	messages := ToChatCompletionMessages(task.Args)
 	agent.Messages = messages
 	return &agent
 }

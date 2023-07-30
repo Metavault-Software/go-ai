@@ -8,7 +8,7 @@ import (
 func TestWebSocketClientAgent_Execute(t *testing.T) {
 	task := &Task{
 		Id:       "1",
-		Name:     "WebSocket Client Task",
+		Agent:    Agent{AgentId: "1", Name: "WebSocket Client Task"},
 		Executor: &WebSocketClientAgent{Addr: "ws://localhost:8080/ws"},
 	}
 

@@ -11,8 +11,8 @@ type WebSocketClientAgent struct {
 	Addr string
 }
 
-func NewWebSocketClientAgent(spec TaskSpec) *WebSocketClientAgent {
-	addr := spec.Args["address"].(string)
+func NewWebSocketClientAgent(task Task) *WebSocketClientAgent {
+	addr := task.Args["address"].(string)
 	return &WebSocketClientAgent{Addr: addr}
 }
 

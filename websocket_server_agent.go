@@ -17,11 +17,11 @@ type WebSocketServerAgent struct {
 	mutex     sync.Mutex               // Mutex to protect clients
 }
 
-func NewWebSocketServerAgent(spec TaskSpec) *WebSocketServerAgent {
+func NewWebSocketServerAgent(task Task) *WebSocketServerAgent {
 	return &WebSocketServerAgent{
 		broadcast: make(chan string),
 		clients:   make(map[*websocket.Conn]bool),
-		Address:   spec.Args["address"].(string),
+		Address:   task.Args["address"].(string),
 	}
 }
 

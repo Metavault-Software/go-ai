@@ -16,12 +16,12 @@ type OpenAIGenerativeAgent struct {
 	Parser *CommandLineParser
 }
 
-func NewOpenAIGenerativeAgent(spec TaskSpec) *OpenAIGenerativeAgent {
+func NewOpenAIGenerativeAgent(task Task) *OpenAIGenerativeAgent {
 	agent := OpenAIGenerativeAgent{}
 	agent.Parser = GetInstance()
-	agent.Prompt = spec.Args["prompt"].(string)
-	agent.N = int(spec.Args["n"].(float64))
-	agent.Size = spec.Args["size"].(string)
+	agent.Prompt = task.Args["prompt"].(string)
+	agent.N = int(task.Args["n"].(float64))
+	agent.Size = task.Args["size"].(string)
 	return &agent
 }
 

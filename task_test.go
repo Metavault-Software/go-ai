@@ -8,7 +8,7 @@ import (
 func TestMockExecutor_Execute(t *testing.T) {
 	task := &Task{
 		Id:       "1",
-		Name:     "Sample task",
+		Agent:    Agent{AgentId: "1", Name: "Sample task"},
 		Executor: &MockExecutor{},
 	}
 

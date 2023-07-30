@@ -13,10 +13,10 @@ type GoogleTranslationAgent struct {
 	Text         string
 }
 
-func NewGoogleTranslationAgent(spec TaskSpec) *GoogleTranslationAgent {
+func NewGoogleTranslationAgent(task Task) *GoogleTranslationAgent {
 	agent := GoogleTranslationAgent{}
 	parser := GetInstance()
-	agent.Text = spec.Args["text"].(string)
+	agent.Text = task.Args["text"].(string)
 	agent.GoogleApiKey = parser.GoogleAPIKey
 	return &agent
 }

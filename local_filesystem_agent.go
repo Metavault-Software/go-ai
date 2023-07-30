@@ -11,8 +11,8 @@ type LocalFileSystemAgent struct {
 	DirPath string
 }
 
-func NewLocalFileSystemAgent(taskSpec TaskSpec) *LocalFileSystemAgent {
-	return &LocalFileSystemAgent{DirPath: taskSpec.Args["dir_path"].(string)}
+func NewLocalFileSystemAgent(task Task) *LocalFileSystemAgent {
+	return &LocalFileSystemAgent{DirPath: task.Args["dir_path"].(string)}
 }
 
 func (a *LocalFileSystemAgent) Execute(ctx context.Context, task *Task) error {

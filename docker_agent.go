@@ -17,10 +17,10 @@ type DockerAgent struct {
 	Command []string
 }
 
-func NewDockerAgent(spec TaskSpec) Executor {
+func NewDockerAgent(task Task) Executor {
 	agent := DockerAgent{}
-	agent.Image = spec.Args["image"].(string)
-	agent.Command = agent.FromArgs(spec.Args["command"].([]interface{}))
+	agent.Image = task.Args["image"].(string)
+	agent.Command = agent.FromArgs(task.Args["command"].([]interface{}))
 	return &agent
 }
 
