@@ -1,6 +1,8 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
+	"context"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -44,24 +46,61 @@ func SetupHomeScreen(r *gin.Engine) {
 }
 
 func SetupRoutes(r *gin.Engine, store AgentStore, taskApi *TaskApi) {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "valid-actor-393616")
+	if err != nil {
+		log.Fatalf("Failed to create Firestore client: %v", err)
+	}
 	v1 := r.Group("/api/v1")
 	{
-
-		v1.POST("/agents", store.AddAgent)
-		v1.GET("/agents", store.GetAgents)
-		v1.GET("/agents/:agentId", store.GetAgent)
-		v1.PUT("/agents/:agentId", store.UpdateAgent)
-		v1.DELETE("/agents/:agentId", store.DeleteAgent)
-
-		v1.POST("/tasks", taskApi.CreateTask)
-		v1.GET("/tasks", taskApi.GetTasks)
-		v1.GET("/tasks/:id", taskApi.GetTask)
-		v1.DELETE("/tasks/:id", taskApi.DeleteTask)
-		v1.PUT("/tasks/:id", taskApi.UpdateTask)
-
+		SetupTaskRoutes(v1, taskApi)
+		SetupWorkflowRoutes(v1, NewWorkflowApi(NewFirestoreWorkflowRepository(client)))
+		SetupWorkspaceRoutes(v1, NewWorkspaceApi(NewFirestoreWorkspaceRepository(client)))
+		SetupUserRoutes(v1, NewUserApi(NewFirestoreUserRepository()))
+		SetupAgentRoutes(v1, store)
 		var tasks []Task
 		SetupStatus(tasks, v1)
 	}
+}
+
+func SetupWorkspaceRoutes(v1 *gin.RouterGroup, workspaceApi *WorkspaceApi) {
+	v1.POST("/users/:user_id/workspaces", workspaceApi.CreateWorkspace)
+	v1.GET("/users/:user_id/workspaces", workspaceApi.GetWorkspaces)
+	v1.GET("/users/:user_id/workspaces/:workspace_id", workspaceApi.GetWorkspace)
+	v1.PUT("/users/:user_id/workspaces/:workspace_id", workspaceApi.UpdateWorkspace)
+	v1.DELETE("/users/:user_id/workspaces/:workspace_id", workspaceApi.DeleteWorkspace)
+}
+
+func SetupWorkflowRoutes(v1 *gin.RouterGroup, workflowApi *WorkflowApi) {
+	v1.POST("/users/:user_id/workspaces/:workspace_id/workflows", workflowApi.CreateWorkflow)
+	v1.GET("/users/:user_id/workspaces/:workspace_id/workflows", workflowApi.GetWorkflows)
+	v1.GET("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id", workflowApi.GetWorkflow)
+	v1.PUT("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id", workflowApi.UpdateWorkflow)
+	v1.DELETE("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id", workflowApi.DeleteWorkflow)
+}
+
+func SetupTaskRoutes(v1 *gin.RouterGroup, taskApi *TaskApi) {
+	v1.POST("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id/tasks", taskApi.CreateTask)
+	v1.GET("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id/tasks", taskApi.GetTasks)
+	v1.GET("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id/tasks/:id", taskApi.GetTask)
+	v1.PUT("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id/tasks/:id", taskApi.UpdateTask)
+	v1.DELETE("/users/:user_id/workspaces/:workspace_id/workflows/:workflow_id/tasks/:id", taskApi.DeleteTask)
+}
+
+func SetupUserRoutes(v1 *gin.RouterGroup, userApi *UserWebApi) {
+	v1.POST("/users", userApi.CreateUser)
+	v1.GET("/users", userApi.GetUsers)
+	v1.GET("/users/:user_id", userApi.GetUser)
+	v1.PUT("/users/:user_id", userApi.UpdateUser)
+	v1.DELETE("/users/:user_id", userApi.DeleteUser)
+}
+
+func SetupAgentRoutes(v1 *gin.RouterGroup, store AgentStore) {
+	v1.POST("/agents", store.AddAgent)
+	v1.GET("/agents", store.GetAgents)
+	v1.GET("/agents/:agentId", store.GetAgent)
+	v1.PUT("/agents/:agentId", store.UpdateAgent)
+	v1.DELETE("/agents/:agentId", store.DeleteAgent)
 }
 
 func SetupCors(r *gin.Engine) gin.IRoutes {
