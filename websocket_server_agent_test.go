@@ -6,17 +6,19 @@ import (
 )
 
 func TestNewWebSocketServerAgent(t *testing.T) {
-
-	spec := TaskSpec{
+	spec := Agent{
 		Name: "WebSocketServerAgent",
 		Args: map[string]interface{}{
 			"address": "ws://localhost:8080",
 		},
 	}
 	task := &Task{
-		Id:       "1",
-		Agent:    Agent{AgentId: "1", Name: "WebSocket Server Task"},
-		Executor: NewWebSocketServerAgent(spec),
+		Id:    "1",
+		Agent: spec,
+	}
+	err := task.ExecutorFromExecutorType()
+	if err != nil {
+		t.Errorf("Error: %v", err)
 	}
 
 	cancel := task.Run()

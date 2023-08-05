@@ -28,10 +28,15 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetAll(ctx context.Context) ([]User, error)
 	Update(ctx context.Context, user User) (User, error)
+	GetClient() *firestore.Client
 }
 
 type FirestoreUserRepository struct {
 	Client *firestore.Client
+}
+
+func (r *FirestoreUserRepository) GetClient() *firestore.Client {
+	return r.Client
 }
 
 func NewFirestoreUserRepository() UserRepository {

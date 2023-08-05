@@ -78,3 +78,41 @@ type UserApiInterface interface {
 	DeleteUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 }
+
+//func (ua *UserWebApi) Login(c *gin.Context) {
+//	// ... Same code as before
+//
+//	// Create a session token
+//	sessionToken := generateSessionToken()
+//
+//	// Store the session token in Firestore
+//	_, err := ua.Repo.GetClient().Collection("sessions").Doc(sessionToken).Set(context.Background(), map[string]interface{}{
+//		"userID":    user.ID,
+//		"createdAt": time.Now(),
+//		"expiresAt": time.Now().Add(24 * time.Hour), // Example expiration time
+//	})
+//	if err != nil {
+//		c.JSON(500, gin.H{"error": "Failed to create session"})
+//		return
+//	}
+//
+//	c.JSON(200, gin.H{"message": "Logged in successfully", "token": sessionToken})
+//}
+//
+//func generateSessionToken() string {
+//	// Implement your logic to generate a unique session token
+//}
+//
+//func (ua *UserWebApi) Logout(c *gin.Context) {
+//	// Retrieve the session token from request, e.g., from a header
+//	sessionToken := c.GetHeader("Authorization")
+//
+//	// Delete the session token from Firestore
+//	_, err := ua.FirestoreClient.Collection("sessions").Doc(sessionToken).Delete(context.Background())
+//	if err != nil {
+//		c.JSON(500, gin.H{"error": "Failed to log out"})
+//		return
+//	}
+//
+//	c.JSON(200, gin.H{"message": "Logged out successfully"})
+//}
