@@ -93,6 +93,9 @@ func SetupUserRoutes(v1 *gin.RouterGroup, userApi *UserWebApi) {
 	v1.GET("/users/:user_id", userApi.GetUser)
 	v1.PUT("/users/:user_id", userApi.UpdateUser)
 	v1.DELETE("/users/:user_id", userApi.DeleteUser)
+
+	v1.POST("/login", userApi.Login)
+	v1.POST("/logout", userApi.Logout)
 }
 
 func SetupAgentRoutes(v1 *gin.RouterGroup, store AgentStore) {

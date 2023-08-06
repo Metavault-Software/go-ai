@@ -8,13 +8,13 @@ import (
 )
 
 type Workflow struct {
-	ID          string
-	Name        string
-	Description string
-	Tasks       map[string]Task
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	IsActive    bool
+	ID          string          `json:"id" firestore:"id"`
+	Name        string          `json:"name" firestore:"name"`
+	Description string          `json:"description" firestore:"description"`
+	Tasks       map[string]Task `json:"tasks" firestore:"tasks"`
+	CreatedAt   time.Time       `json:"created_at" firestore:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at" firestore:"updated_at"`
+	IsActive    bool            `json:"is_active" firestore:"is_active"`
 }
 
 type WorkflowRepository interface {
@@ -41,7 +41,10 @@ func (r *FirestoreWorkflowRepository) GetByID(ctx context.Context, userID string
 		return Workflow{}, err
 	}
 	var workflow Workflow
-	doc.DataTo(&workflow)
+	err = doc.DataTo(&workflow)
+	if err != nil {
+		return Workflow{}, err
+	}
 	return workflow, nil
 }
 
@@ -73,7 +76,10 @@ func (r *FirestoreWorkflowRepository) GetAll(ctx context.Context, userID string,
 			return nil, err
 		}
 		var workflow Workflow
-		doc.DataTo(&workflow)
+		err = doc.DataTo(&workflow)
+		if err != nil {
+			return nil, err
+		}
 		workflows = append(workflows, workflow)
 	}
 	return workflows, nil

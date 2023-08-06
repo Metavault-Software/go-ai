@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -12,6 +13,19 @@ import (
 	"testing"
 	"time"
 )
+
+func TestPassword(t *testing.T) {
+	password := "secure_password"
+
+	// Generate the bcrypt hash for the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("Error generating bcrypt hash:", err)
+		return
+	}
+
+	fmt.Println("Bcrypt hash:", string(hashedPassword))
+}
 
 func TestTaskDag(t *testing.T) {
 	// Seed random number generator

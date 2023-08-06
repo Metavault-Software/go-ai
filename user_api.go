@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	base64 "encoding/base64"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"math/rand"
+	"net/http"
 )
 
 type UserWebApi struct {
@@ -19,6 +24,18 @@ func (ua *UserWebApi) CreateUser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Hash the password before saving
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	fmt.Println("Hashed Password:", string(hashedPassword)) // Add this line to print the hashed password
+
+	user.Password = string(hashedPassword)
+
 	newUser, err := ua.Repo.Save(context.Background(), user)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to add user"})
@@ -79,40 +96,85 @@ type UserApiInterface interface {
 	UpdateUser(c *gin.Context)
 }
 
-//func (ua *UserWebApi) Login(c *gin.Context) {
-//	// ... Same code as before
-//
-//	// Create a session token
-//	sessionToken := generateSessionToken()
-//
-//	// Store the session token in Firestore
-//	_, err := ua.Repo.GetClient().Collection("sessions").Doc(sessionToken).Set(context.Background(), map[string]interface{}{
-//		"userID":    user.ID,
-//		"createdAt": time.Now(),
-//		"expiresAt": time.Now().Add(24 * time.Hour), // Example expiration time
-//	})
-//	if err != nil {
-//		c.JSON(500, gin.H{"error": "Failed to create session"})
-//		return
-//	}
-//
-//	c.JSON(200, gin.H{"message": "Logged in successfully", "token": sessionToken})
-//}
-//
-//func generateSessionToken() string {
-//	// Implement your logic to generate a unique session token
-//}
-//
-//func (ua *UserWebApi) Logout(c *gin.Context) {
-//	// Retrieve the session token from request, e.g., from a header
-//	sessionToken := c.GetHeader("Authorization")
-//
-//	// Delete the session token from Firestore
-//	_, err := ua.FirestoreClient.Collection("sessions").Doc(sessionToken).Delete(context.Background())
-//	if err != nil {
-//		c.JSON(500, gin.H{"error": "Failed to log out"})
-//		return
-//	}
-//
-//	c.JSON(200, gin.H{"message": "Logged out successfully"})
-//}
+// generateSessionToken generates a unique session token.
+func generateSessionToken() string {
+	// Define the length of the session token in bytes
+	tokenLength := 32
+
+	// Generate random bytes
+	randomBytes := make([]byte, tokenLength)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		// Handle error, if any
+		panic(err)
+	}
+
+	// Encode the random bytes to base64 string
+	token := base64.RawStdEncoding.EncodeToString(randomBytes)
+
+	return token
+}
+
+func (ua *UserWebApi) Login(c *gin.Context) {
+	var credentials struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := c.ShouldBindJSON(&credentials); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	user, err := ua.Repo.GetByEmail(context.Background(), credentials.Email)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	// Validate password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	// Generate a session token
+	sessionToken := generateSessionToken()
+	user.SessionToken = sessionToken
+
+	// Save the updated user with the session token
+	_, err = ua.Repo.Update(context.Background(), user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"session_token": sessionToken})
+}
+
+func (ua *UserWebApi) Logout(c *gin.Context) {
+	sessionToken := c.GetHeader("Authorization")
+	if sessionToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Session token not provided"})
+		return
+	}
+
+	// Get the user with the given session token
+	user, err := ua.Repo.GetBySessionToken(context.Background(), sessionToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session token"})
+		return
+	}
+
+	// Clear the session token
+	user.SessionToken = ""
+
+	// Save the updated user without the session token
+	_, err = ua.Repo.Update(context.Background(), user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear session"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+}

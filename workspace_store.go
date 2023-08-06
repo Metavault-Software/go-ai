@@ -9,14 +9,14 @@ import (
 )
 
 type Workspace struct {
-	ID          string
-	Name        string
-	Description string
-	Workflows   map[string]Workflow
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	IsActive    bool
-	OwnerID     string
+	ID          string              `json:"id" firestore:"id"`
+	Name        string              `json:"name" firestore:"name"`
+	Description string              `json:"description" firestore:"description"`
+	Workflows   map[string]Workflow `json:"workflows" firestore:"workflows"`
+	CreatedAt   time.Time           `json:"created_at" firestore:"created_at"`
+	UpdatedAt   time.Time           `json:"updated_at" firestore:"updated_at"`
+	IsActive    bool                `json:"is_active" firestore:"is_active"`
+	OwnerID     string              `json:"owner_id" firestore:"owner_id"`
 }
 
 type WorkspaceRepository interface {

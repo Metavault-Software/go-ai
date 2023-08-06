@@ -9,16 +9,17 @@ import (
 )
 
 type User struct {
-	ID          string
-	Email       string
-	Password    string // make sure to hash the password before storing
-	Workspaces  map[string]Workspace
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	FirstName   string
-	LastName    string
-	IsActive    bool
-	LastLoginAt time.Time
+	ID           string               `json:"id" firestore:"id"`
+	Email        string               `json:"email" firestore:"email"`
+	Password     string               `json:"password" firestore:"password"` // make sure to hash the password before storing
+	Workspaces   map[string]Workspace `json:"workspaces" firestore:"workspaces" `
+	CreatedAt    time.Time            `json:"created_at" firestore:"created_at"`
+	UpdatedAt    time.Time            `json:"updated_at" firestore:"updated_at"`
+	FirstName    string               `json:"first_name" firestore:"first_name"`
+	LastName     string               `json:"last_name" firestore:"last_name"`
+	IsActive     bool                 `json:"is_active" firestore:"is_active"`
+	LastLoginAt  time.Time            `json:"last_login_at" firestore:"last_login_at"`
+	SessionToken string               `json:"session_token" firestore:"session_token"`
 }
 
 type UserRepository interface {
@@ -29,10 +30,28 @@ type UserRepository interface {
 	GetAll(ctx context.Context) ([]User, error)
 	Update(ctx context.Context, user User) (User, error)
 	GetClient() *firestore.Client
+	GetBySessionToken(background context.Context, token string) (User, error)
 }
 
 type FirestoreUserRepository struct {
 	Client *firestore.Client
+}
+
+func (r *FirestoreUserRepository) GetBySessionToken(
+	background context.Context,
+	token string,
+) (User, error) {
+	iter := r.Client.Collection("users").Where("session_token", "==", token).Documents(background)
+	doc, err := iter.Next()
+	if err != nil {
+		return User{}, err
+	}
+	var user User
+	err = doc.DataTo(&user)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
 }
 
 func (r *FirestoreUserRepository) GetClient() *firestore.Client {
@@ -49,13 +68,16 @@ func NewFirestoreUserRepository() UserRepository {
 }
 
 func (r *FirestoreUserRepository) GetByEmail(ctx context.Context, email string) (User, error) {
-	iter := r.Client.Collection("users").Where("Email", "==", email).Documents(ctx)
+	iter := r.Client.Collection("users").Where("email", "==", email).Documents(ctx)
 	doc, err := iter.Next()
 	if err != nil {
 		return User{}, err
 	}
 	var user User
-	doc.DataTo(&user)
+	err = doc.DataTo(&user)
+	if err != nil {
+		return User{}, err
+	}
 	return user, nil
 }
 
